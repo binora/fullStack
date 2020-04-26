@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-// import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import Login from "./components/Login/login";
 import Projects from "./components/Projects/projects";
 import ApolloClient from 'apollo-boost'
@@ -13,31 +13,16 @@ const client = new ApolloClient({ //apollo client instance
   uri: 'http://localhost:5000/graphql'
 })
 
-class App extends Component{
+class App extends Component {
   render() {
     return (
-      // <Router>
-      //   <div>
-      //     <ul>
-      //       <li>
-      //         <Link to="/">Login</Link>
-      //       </li>
-      //       <li>
-      //         <Link to="/project">Projects</Link>
-      //       </li>
-      //     </ul>
-      //     <hr />
-      //     <Switch>
-      //       <Route exact path="/"><Login /></Route>
-      //       <Route path="/project"><Projects /></Route>
-      //     </Switch>
-      //   </div>
-      // </Router>
       <ApolloProvider client={client}>
-        <div className="main">
-          <Login />
-          <Projects />       
-        </div>
+        <Router>
+            <Switch>
+              <Route exact path="/"><Login client={client}/></Route>
+              <Route path="/projects"><Projects client={client}/></Route>
+            </Switch>
+        </Router>
       </ApolloProvider>
     )
   }
