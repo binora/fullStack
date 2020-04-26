@@ -75,12 +75,12 @@ const RootQuery = new GraphQLObjectType({
             type: UserType,     //store the username and passsword in the db for demo
             args: {
                 username: { type: GraphQLString },
-                password: { type: GraphQLID },
-                role : { type :GraphQLString}
+                password: { type: GraphQLString },
             },
+            // Logging in user with username and password
             resolve(parent, args) {
-                //Code to get data when requested the query of that ID
-                return User.findById(args.id);
+                const { username, password } = args
+                return User.findOne({ username, password }).select(['id', 'username', 'role'])
             }
         },
         project: {   //project
@@ -167,12 +167,12 @@ const Mutation = new GraphQLObjectType({
             },
             resolve(parent, args) {
                 let question = new Question({
-                   question :args.question,
-                   answer :args.answer,
-                   category :args.category,
-                   priority : args.priority
+                    question: args.question,
+                    answer: args.answer,
+                    category: args.category,
+                    priority: args.priority
                 });
-             return question.save();
+                return question.save();
             }
         },
     }

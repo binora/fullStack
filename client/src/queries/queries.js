@@ -17,11 +17,20 @@ query($id: ID){
     user(id: $id){
         id,
         name,
-        password,
         role
     }
 }
 `
+const loginUserQuery = gql`
+query($username: String, $password: String){
+    user(username: $username, password: $password){
+        id,
+        username,
+        role
+    }
+}
+`
+
 const getProjectsQuery = gql`
   {
       projects{
@@ -60,6 +69,7 @@ mutation($username :String! ,$password :String! , $role :String!){
 // `
 export {
     getUserQuery,
+    loginUserQuery,
     getProjectsQuery,
     // getQuestionsQuery,
     // addProjectMutation,

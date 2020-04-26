@@ -1,9 +1,16 @@
 import React, { Component } from "react";
-import { getUserQuery , userMutation } from "../../queries/queries";
+import { Redirect } from "react-router-dom";
+import { loginUserQuery } from "../../queries/queries";
 import { flowRight as compose } from 'lodash';
 import { graphql } from 'react-apollo';
 import "./login.styles.scss";
 
+/*
+
+login ---> username, password ----> server ---> checks in database ---> 
+
+
+*/
 
 class Login extends Component {
     constructor(props) {
@@ -11,41 +18,37 @@ class Login extends Component {
         this.state = {
             username: '',
             password: '',
-            role: '',
+            toProjects: false,
         }
+        this.redirectToProjects = this.redirectToProjects.bind(this)
 
     }
-    displayUsers() {
-       const {user} = this.props.getUserQuery; 
-        // console.log(user);
-        if(user){
-            return (
-                <div>
-                    <p> Welcome {user.username}</p>
-                </div>
-            )
-        }
-      
-    }
-
-
     //adding the updated state values to the query variables
     submitForm(e) {
         e.preventDefault();
-        console.log(this.props.data);
-        this.props.userMutation({
+        const { client } = this.props
+        client.query({
+            query: loginUserQuery,
             variables: {
-                username : this.state.username,
-                password :this.state.password,
-                role : this.state.role
-            },
-            refetchQueries: [{
-                query: getUserQuery
-            }]
-        });
+                username: this.state.username,
+                password: this.state.password,
+            }
+        }).then(({ data }) => this.redirectToProjects(data));
+    }
+
+    redirectToProjects(data) {
+        const { user } = data
+        if (user === null) {
+            alert("Unknown user")
+            return
+        }
+        this.setState({...this.state, toProjects: true})
     }
 
     render() {
+        if (this.state.toProjects) {
+            return <Redirect to="/projects"/>
+        }
         return (
             <div className="login-page">
                 <h2>Login Page</h2>
@@ -58,22 +61,19 @@ class Login extends Component {
                         <label>Password :</label>
                         <input type="password" onChange={(e) => this.setState({ password: e.target.value })} required placeholder="Password" />
                     </div>
-                    <div className="field">
+                    {/* <div className="field">
                         <label>Role :</label>
                         <input type="text" onChange={(e) => this.setState({ role: e.target.value })} required />
-                    </div>
-                 <button type="submit">Submit</button>
-              </form>
-                <span >
+                    </div> */}
+                    <button type="submit">Submit</button>
+                </form>
+                {/* <span >
                     {this.displayUsers()}
-                </span>
+                </span> */}
             </div>
 
         )
     }
 }
 
-export default compose(
-    graphql(getUserQuery, { name: "getUserQuery" }),
-    graphql(userMutation, { name: "userMutation" })
-    )(Login);
+export default Login;
