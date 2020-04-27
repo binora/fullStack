@@ -1,26 +1,6 @@
 import { gql } from "apollo-boost";
 
 
-
-// const getUsersQuery = gql`
-//  {
-//      users{
-//          id
-//          username
-//          password
-//          role
-//      }
-//  }
-// `
-const getUserQuery = gql`  
-query($id: ID){
-    user(id: $id){
-        id,
-        name,
-        role
-    }
-}
-`
 const loginUserQuery = gql`
 query($username: String, $password: String){
     user(username: $username, password: $password){
@@ -44,8 +24,16 @@ const getProjectsQuery = gql`
   }
 `
 
-// const getQuestionsQuery = gql`
-// `
+const getQuestionsQuery = gql`
+{
+    questions{
+        id
+        question
+        answer
+        priority
+    }
+}
+`
 
 //Using query variables to get the values in the fields 
 // from the updated state in the component
@@ -68,10 +56,9 @@ mutation($username :String! ,$password :String! , $role :String!){
 
 // `
 export {
-    getUserQuery,
     loginUserQuery,
     getProjectsQuery,
-    // getQuestionsQuery,
+    getQuestionsQuery,
     // addProjectMutation,
     userMutation,
     // addQuestionMutation

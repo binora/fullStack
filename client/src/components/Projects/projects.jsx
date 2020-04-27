@@ -1,44 +1,60 @@
-/*  
-Making queries from React component
-- Contruct a query
-- Bind the query to the component
-- recieved query data is reflected in the component
-*/
-
 import React, { Component } from "react";
 import { graphql } from "react-apollo";
 import { getProjectsQuery } from "../../queries/queries";
-import { Link } from "react-router-dom";
+import QuestionList from "../QuestionList/questionList";
+import { Link} from "react-router-dom";
 import "./projects.styles.scss";
 
 
 class Projects extends Component {
-    displayProjects() {
-        var data = this.props.data; //props is the recieved data from query
+
+    constructor(props) {
+        super(props)
+        this.state = {
+            name: '',
+            toEditor: false
+        }
+    }
+  
+
+    showProjectListComponent() {
+        // const { client } = this.props;
+        const data = this.props.data;
         if (data.loading) {
             return <div>Loading Projects...</div>
         }
         return data.projects.map(project => {
-            // return <li key={project.id}></li>
-            // return <li key={project.id}>{project.name}</li>
             return (
-                <li key={project.id}>
+                <li key={project.id} onClick={(e) => { this.setState({ ...this.state, name: project.name }) }} >
                     <Link to={`/projects/${project.id}`}>{project.name}</Link>
                 </li>
-                )
+            )
         })
+
     }
+
+    showQuestionComponent() {
+        if (this.state.name) {
+            return <QuestionList client={this.props.client} name={this.state.name} />
+        }
+    }
+    // showEditor() {
+    //     if (this.state.toEditor) {
+    //         console.log("true");
+    //         return  <Redirect to ="/editQuestion" />
+            
+    //     }
+    // }
     render() {
-        console.log(this.props.data);
         return (
             <div className="projects">
                 <h2>Projects List</h2>
-                <ul>
-                    {this.displayProjects()}
-                </ul>
+                <ul>{this.showProjectListComponent()} </ul>
+                {this.showQuestionComponent()}
             </div>
         )
     }
 
 }
+
 export default graphql(getProjectsQuery)(Projects);

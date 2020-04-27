@@ -1,15 +1,12 @@
 import React, { Component } from "react";
 import { Redirect } from "react-router-dom";
 import { loginUserQuery } from "../../queries/queries";
-import { flowRight as compose } from 'lodash';
-import { graphql } from 'react-apollo';
+import { graphql } from "react-apollo";
 import "./login.styles.scss";
 
+
 /*
-
 login ---> username, password ----> server ---> checks in database ---> 
-
-
 */
 
 class Login extends Component {
@@ -20,34 +17,51 @@ class Login extends Component {
             password: '',
             toProjects: false,
         }
-        this.redirectToProjects = this.redirectToProjects.bind(this)
+        this.redirectToProjectPage = this.redirectToProjectPage.bind(this)
 
     }
     //adding the updated state values to the query variables
     submitForm(e) {
         e.preventDefault();
-        const { client } = this.props
+        const { client } = this.props;
+        const data  = this.props.data;
+        console.log(data);
         client.query({
             query: loginUserQuery,
             variables: {
                 username: this.state.username,
                 password: this.state.password,
             }
-        }).then(({ data }) => this.redirectToProjects(data));
+        }).then(({ data }) => {
+            return (this.redirectToProjectPage(data))
+        });
     }
 
-    redirectToProjects(data) {
+    // showEditor(data) {
+    //     console.log(data);
+    //     const { user } = data
+    //     if (user.role === "Admin" || user.role === "Editor") {
+    //         console.log(`${user.role} logged In`);
+    //         return <Redirect to ="/editQuestion" />
+    //     }
+
+    // }
+
+    redirectToProjectPage(data) {
+        console.log(data);
         const { user } = data
         if (user === null) {
             alert("Unknown user")
             return
         }
-        this.setState({...this.state, toProjects: true})
+        this.setState({
+            ...this.state, toProjects: true
+        })
     }
 
     render() {
         if (this.state.toProjects) {
-            return <Redirect to="/projects"/>
+            return <Redirect to="/projects" />
         }
         return (
             <div className="login-page">
@@ -61,19 +75,12 @@ class Login extends Component {
                         <label>Password :</label>
                         <input type="password" onChange={(e) => this.setState({ password: e.target.value })} required placeholder="Password" />
                     </div>
-                    {/* <div className="field">
-                        <label>Role :</label>
-                        <input type="text" onChange={(e) => this.setState({ role: e.target.value })} required />
-                    </div> */}
                     <button type="submit">Submit</button>
                 </form>
-                {/* <span >
-                    {this.displayUsers()}
-                </span> */}
             </div>
 
         )
     }
 }
 
-export default Login;
+export default graphql(loginUserQuery)(Login);
