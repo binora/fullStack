@@ -25,7 +25,8 @@ const UserType = new GraphQLObjectType({
         id: { type: GraphQLString },
         username: { type: GraphQLString },
         password: { type: GraphQLID }, //can be string or number
-        role: { type: GraphQLString }
+        role: { type: GraphQLString },
+        token :{type : GraphQLString}
     })
 });
 
@@ -125,7 +126,8 @@ const Mutation = new GraphQLObjectType({
             args: {
                 username: { type: new GraphQLNonNull(GraphQLString) },
                 password: { type: new GraphQLNonNull(GraphQLID) },
-                role: { type: new GraphQLNonNull(GraphQLString) }
+                role: { type: new GraphQLNonNull(GraphQLString) },
+                token :{ type: new GraphQLNonNull(GraphQLString) }
             },
             //Created the instance of the models (collections) to 
             //save the data to the database and return the data to the frond end
@@ -134,7 +136,8 @@ const Mutation = new GraphQLObjectType({
                 let user = new User({
                     username: args.username,
                     password: args.password,
-                    role: args.role
+                    role: args.role,
+                    token :args.token
                 });
                 return user.save(); //save the collection to the database     
             }
