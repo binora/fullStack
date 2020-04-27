@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { graphql } from "react-apollo";
 import { getProjectsQuery } from "../../queries/queries";
 import QuestionList from "../QuestionList/questionList";
-import { Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 import "./projects.styles.scss";
 
 
@@ -15,7 +15,6 @@ class Projects extends Component {
             toEditor: false
         }
     }
-  
 
     showProjectListComponent() {
         // const { client } = this.props;
@@ -24,8 +23,11 @@ class Projects extends Component {
             return <div>Loading Projects...</div>
         }
         return data.projects.map(project => {
+            console.log(project)
             return (
-                <li key={project.id} onClick={(e) => { this.setState({ ...this.state, name: project.name }) }} >
+                <li key={project.id} onClick={(e) => {
+                    this.setState({ ...this.state, project })
+                }} >
                     <Link to={`/projects/${project.id}`}>{project.name}</Link>
                 </li>
             )
@@ -34,15 +36,16 @@ class Projects extends Component {
     }
 
     showQuestionComponent() {
-        if (this.state.name) {
-            return <QuestionList client={this.props.client} name={this.state.name} />
+        if (this.state.project) {
+            const { name } = this.state.project;
+            return <QuestionList client={this.props.client} name={name} />
         }
     }
     // showEditor() {
     //     if (this.state.toEditor) {
     //         console.log("true");
     //         return  <Redirect to ="/editQuestion" />
-            
+
     //     }
     // }
     render() {

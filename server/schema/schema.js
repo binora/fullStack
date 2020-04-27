@@ -26,7 +26,7 @@ const UserType = new GraphQLObjectType({
         username: { type: GraphQLString },
         password: { type: GraphQLID }, //can be string or number
         role: { type: GraphQLString },
-        token :{type : GraphQLString}
+        token: { type: GraphQLString }
     })
 });
 
@@ -35,10 +35,12 @@ const QuestionType = new GraphQLObjectType({
     name: "Question",
     fields: () => ({
         id: { type: GraphQLString },
+        user_token: { type: GraphQLString },
         question: { type: GraphQLString },
         answer: { type: GraphQLString },
         priority: { type: GraphQLString }, //mandatory questions should be listed above optional
-        category: { type: GraphQLString }
+        category: { type: GraphQLString },
+        editingAllowed: { type: GraphQLString }
     })
 })
 
@@ -81,12 +83,15 @@ const RootQuery = new GraphQLObjectType({
             // Logging in user with username and password
             resolve(parent, args) {
                 const { username, password } = args
-                return User.findOne({ username, password }).select(['id', 'username', 'role'])
+                User.findOne({ username, password }).select(['id', 'username', 'role', 'token']).then(console.log)
+                return User.findOne({ username, password }).select(['id', 'username', 'role', 'token'])
             }
         },
         project: {   //project
             type: ProjectType,
-            args: { id: { type: GraphQLString } },
+            args: {
+                id: { type: GraphQLString }
+            },
             resolve(parent, args) {
                 return Project.findById(args.id);
             }
@@ -100,8 +105,19 @@ const RootQuery = new GraphQLObjectType({
         },
         questions: {
             type: new GraphQLList(QuestionType), //list of Questions
-            resolve(parent, args) {
-                return Question.find({});
+            args: { user_token: { type: GraphQLString } },
+            async resolve(parent, args) {
+                const { role } = await User.findOne({ token: args.user_token }).select(['role']);
+                const questions = await Question.find({})
+                let editingAllowed = false;
+                if (role == "Admin" || role == "Editor") {
+                    editingAllowed = true;
+                }
+                // return questions;
+                return questions.map((q) => {
+                    q.editingAllowed = editingAllowed
+                    return q
+                })
             }
         },
         projects: {
@@ -127,7 +143,7 @@ const Mutation = new GraphQLObjectType({
                 username: { type: new GraphQLNonNull(GraphQLString) },
                 password: { type: new GraphQLNonNull(GraphQLID) },
                 role: { type: new GraphQLNonNull(GraphQLString) },
-                token :{ type: new GraphQLNonNull(GraphQLString) }
+                token: { type: new GraphQLNonNull(GraphQLString) }
             },
             //Created the instance of the models (collections) to 
             //save the data to the database and return the data to the frond end
@@ -137,7 +153,7 @@ const Mutation = new GraphQLObjectType({
                     username: args.username,
                     password: args.password,
                     role: args.role,
-                    token :args.token
+                    token: args.token
                 });
                 return user.save(); //save the collection to the database     
             }

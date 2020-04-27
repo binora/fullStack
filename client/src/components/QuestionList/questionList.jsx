@@ -1,6 +1,6 @@
 
 import React, { Component } from "react";
-import { getQuestionsQuery } from "../../queries/queries";
+import { getQuestionsQueryUsingToken } from "../../queries/queries";
 import { graphql } from "react-apollo";
 import EditQuestionModel from "../EditQuestion/editQuestion"
 
@@ -23,16 +23,15 @@ class QuestionList extends Component {
                     <p>Question : {item.question}</p>
                     <p>Answer : {item.answer}</p>
                     <button>{item.priority}</button><br></br>
-                    <button type="button" className="edit-button" onClick={this.showEditQuestionModal}>Edit Question</button>
-                    <EditQuestionModel item= {item} showModal={this.state.showModal} handleClose={this.hideEditQuestionModal} />
+                    <button type="button" disabled={item.editingAllowed != "true"} className="edit-button" onClick={() => this.showEditQuestionModal(item)}>Edit Question</button>
                 </div>
             )
         })
     }
 
-    showEditQuestionModal = () => {
+    showEditQuestionModal = (question) => {
         console.log("open");
-        this.setState({ showModal: true });
+        this.setState({ showModal: true , question});
     }
 
     hideEditQuestionModal = () => {
@@ -40,15 +39,24 @@ class QuestionList extends Component {
         this.setState({ showModal: false });
     }
     render() {
+        console.log(this.props)
         return (
             <div className="question-answer-wrapper">
                 <h1>QuestionList</h1>
                 <h2>Project Name :{this.props.name}</h2>
                 {this.displayQuestions()}
+                <EditQuestionModel item={this.state.question} showModal={this.state.showModal} handleClose={this.hideEditQuestionModal} />
 
             </div>
         )
     }
 }
 
-export default graphql(getQuestionsQuery)(QuestionList);
+export default graphql(getQuestionsQueryUsingToken, {
+    options: (props) => {
+        const token = localStorage.getItem('token');
+        return {
+            variables: { token },
+        }
+    }
+})(QuestionList);
