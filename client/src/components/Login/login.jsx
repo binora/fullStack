@@ -54,6 +54,7 @@ class Login extends Component {
             alert("Unknown user")
             return
         }
+        localStorage.setItem("token", user.token);
         this.setState({
             ...this.state, toProjects: true
         })

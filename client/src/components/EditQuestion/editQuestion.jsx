@@ -11,12 +11,17 @@ class EditQuestionModal extends Component {
             answer: ''
         }
     }
-    componentDidMount() {
+
+    componentDidUpdate(prevProps) {
+        if (prevProps.item == this.props.item) {
+            return
+        }
         this.setState({
             question: this.props.item.question,
             answer: this.props.item.answer
         });
     }
+
     onQuestionChange(event) {
         this.setState({
             question: event.target.value

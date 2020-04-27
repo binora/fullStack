@@ -6,7 +6,8 @@ query($username: String, $password: String){
     user(username: $username, password: $password){
         id,
         username,
-        role
+        role,
+        token
     }
 }
 `
@@ -34,6 +35,18 @@ const getQuestionsQuery = gql`
     }
 }
 `
+const getQuestionsQueryUsingToken = gql`
+query($token:String) {
+    questions(user_token: $token){
+      id
+      question,
+      answer,
+      priority,
+      category,
+      editingAllowed
+    }
+  }
+`
 
 //Using query variables to get the values in the fields 
 // from the updated state in the component
@@ -59,6 +72,7 @@ export {
     loginUserQuery,
     getProjectsQuery,
     getQuestionsQuery,
+    getQuestionsQueryUsingToken,
     // addProjectMutation,
     userMutation,
     // addQuestionMutation
