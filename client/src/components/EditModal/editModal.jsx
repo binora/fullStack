@@ -2,48 +2,39 @@ import React, { Component } from "react";
 import "./editor.styles.scss";
 import { graphql } from "react-apollo";
 import { flowRight as compose } from 'lodash';
-import { getQuestionsQuery, editQuestionMutation } from "../../queries/queries";
+import { editQuestionMutation, getQuestionsQueryUsingToken } from "../../queries/queries";
 
 
 // ({ handleClose, showModal, children, item })
 class EditModal extends Component {
     constructor(props) {
         super(props)
-        this.state = {
-            question: '',
-            answer: ''
-        }
+        this.state = { selectedQuestion: {} }
     }
 
     componentDidUpdate(prevProps) {
         if (prevProps.item === this.props.item) {
             return
         }
+        console.log(this.props.item)
         this.setState({
-            question: this.props.item.question,
-            answer: this.props.item.answer
+            selectedQuestion: this.props.item
         });
     }
 
     //To fix
     submitForm(e) {
         console.log("submitted");
-        console.log(this.props);
         e.preventDefault();
+        const token = localStorage.getItem("token");
+        const { question, answer, id } = this.state.selectedQuestion;
         this.props.editQuestionMutation({
-            variables: {
-                question: this.state.question,
-                answer: this.state.answer
-            },
+            variables: { id, question, answer },
             refetchQueries: [{
-                query: getQuestionsQuery
+                query: getQuestionsQueryUsingToken,
+                variables: { token }
             }]
         });
-        this.setState({
-            question: this.props.item.question,
-            answer: this.props.item.answer
-        });
-
     }
 
     render() {
@@ -61,11 +52,11 @@ class EditModal extends Component {
                         <div className="modal-body">
                             <div className="ques-answer">
                                 <p className="title">Question</p>
-                                <textarea rows="4" cols="50" name="question" value={this.state.question}
-                                    onChange={(e) => this.setState({ question: e.target.value })} />
+                                <textarea rows="4" cols="50" name="question" value={this.state.selectedQuestion.question}
+                                    onChange={(e) => this.setState({ selectedQuestion: {...this.state.selectedQuestion, question: e.target.value}})} />
                                 <p className="title">Answer</p>
                                 <textarea rows="4" cols="50" name="answer"
-                                    value={this.state.answer} onChange={(e) => this.setState({ answer: e.target.value })} />
+                                    value={this.state.selectedQuestion.answer} onChange={(e) => this.setState({ selectedQuestion: {...this.state.selectedQuestion, answer: e.target.value }})} />
                             </div>
                         </div>
                         <div className="modal-footer">

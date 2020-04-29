@@ -53,7 +53,7 @@ const ProjectType = new GraphQLObjectType({
         owner: {
             type: UserType,
             resolve(parent, args) {
-              // return _.find(users, { id: parent.Id });
+                // return _.find(users, { id: parent.Id });
                 return User.findById(parent.id); //return the name of the user whose id matches with the parent id(Project)
             }
         },
@@ -106,18 +106,16 @@ const RootQuery = new GraphQLObjectType({
             type: new GraphQLList(QuestionType), //list of Questions
             args: { user_token: { type: GraphQLString } },
             async resolve(parent, args) {
-                // const { role } = await User.findOne({ token: args.user_token }).select(['role']);
-                // console.log(role);
+                const { role } = await User.findOne({ token: args.user_token }).select(['role']);
+                console.log(role);
                 const questions = await Question.find({})
                 let editingAllowed = true;
-                // if (role == "Admin" || role == "Editor") {
-                //     editingAllowed = true;
-                // }
-                // return questions;
+                if (role == "Admin" || role == "Editor") {
+                    editingAllowed = true;
+                }
                 return questions.map((q) => {
                     q.editingAllowed = editingAllowed
                     return q
-                   
                 })
             }
         },
@@ -179,15 +177,13 @@ const Mutation = new GraphQLObjectType({
         editQuestion: {
             type: QuestionType,
             args: {
+                id: { type: new GraphQLNonNull(GraphQLString) },
                 question: { type: new GraphQLNonNull(GraphQLString) },
                 answer: { type: new GraphQLNonNull(GraphQLString) },
             },
             resolve(parent, args) {
-                let editQuestion = new Question({
-                    question: args.question,
-                    answer: args.answer,
-                });
-                return editQuestion.save();
+                const { id , question, answer } = args;
+                return Question.findOneAndUpdate({ _id: id }, { $set: { question, answer } })
             }
 
         },

@@ -65,8 +65,8 @@ mutation($question :String! ,$answer :String!, $priority :String!,$category :Str
 }
  `
 const editQuestionMutation = gql` 
-mutation($question :String! ,$answer :String!){
-    editQuestion(question :$question ,answer :$answer){
+mutation($id: String!, $question :String! ,$answer :String!){
+    editQuestion(id: $id, question :$question ,answer :$answer){
         question,
         answer
     }

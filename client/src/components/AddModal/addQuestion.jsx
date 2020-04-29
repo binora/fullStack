@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { graphql } from "react-apollo";
 import { flowRight as compose } from 'lodash';
-import { getQuestionsQuery, addQuestionMutation } from "../../queries/queries";
+import { getQuestionsQuery, addQuestionMutation, getQuestionsQueryUsingToken } from "../../queries/queries";
 import "./addQuestion.styles.scss";
 
 
@@ -21,15 +21,18 @@ class AddQuestionModal extends Component {
     submitForm(e) {
         console.log("submitted");
         e.preventDefault();
+        const token = localStorage.getItem("token")
         this.props.addQuestionMutation({
             variables: {
                 question: this.state.question,
                 answer: this.state.answer,
                 priority: this.state.priority,
-                category : this.state.category
+                category: this.state.category
             },
             refetchQueries: [{
-                query: getQuestionsQuery
+                query: getQuestionsQueryUsingToken,
+                // We need to send token here as well since this is triggered after the mutation
+                variables: { token }
             }]
         });
     }
@@ -52,7 +55,7 @@ class AddQuestionModal extends Component {
                                 <textarea rows="4" cols="50" name="question" value={this.state.question}
                                     onChange={(e) => this.setState({ question: e.target.value })} />
                                 <p className="title">Answer</p>
-                                <textarea rows="4" cols="50" name="answer"  onChange={(e) => this.setState({ answer: e.target.value })} />
+                                <textarea rows="4" cols="50" name="answer" onChange={(e) => this.setState({ answer: e.target.value })} />
                             </div>
                             <div className="priority">
                                 <label> Priority </label>
@@ -84,5 +87,5 @@ class AddQuestionModal extends Component {
 
 
 export default compose(
-graphql(addQuestionMutation, { name: "addQuestionMutation" })
+    graphql(addQuestionMutation, { name: "addQuestionMutation" })
 )(AddQuestionModal);

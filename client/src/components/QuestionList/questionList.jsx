@@ -1,6 +1,6 @@
 
 import React, { Component } from "react";
-import {getQuestionsQuery } from "../../queries/queries";
+import { getQuestionsQuery, getQuestionsQueryUsingToken } from "../../queries/queries";
 import { graphql } from "react-apollo";
 import EditModal from "../EditModal/editModal"
 import AddQuestionModal from "../AddModal/addQuestion";
@@ -59,13 +59,14 @@ class QuestionList extends Component {
         )
     }
 }
-export default graphql(getQuestionsQuery)(QuestionList);
 
-// export default graphql(getQuestionsQueryUsingToken, {
-//     options: (props) => {
-//         const token = localStorage.getItem('token');
-//         return {
-//             variables: { token },
-//         }
-//     }
-// })(QuestionList);
+// export default graphql(getQuestionsQuery)(QuestionList);
+
+export default graphql(getQuestionsQueryUsingToken, {
+    options: (props) => {
+        const token = localStorage.getItem('token');
+        return {
+            variables: { token },
+        }
+    }
+})(QuestionList);
