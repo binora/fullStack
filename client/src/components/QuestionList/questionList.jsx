@@ -1,14 +1,17 @@
 
 import React, { Component } from "react";
-import { getQuestionsQueryUsingToken } from "../../queries/queries";
+import {getQuestionsQuery } from "../../queries/queries";
 import { graphql } from "react-apollo";
-import EditQuestionModel from "../EditQuestion/editQuestion"
+import EditModal from "../EditModal/editModal"
+import AddQuestionModal from "../AddModal/addQuestion";
+import './questionlist.styles.scss';
 
 class QuestionList extends Component {
     constructor() {
         super()
         this.state = {
-            showModal: false
+            showEditModal: false,
+            showAddModal: false
         }
     }
 
@@ -19,44 +22,50 @@ class QuestionList extends Component {
         }
         return data.questions.map(item => {
             return (
-                <div key={item.id}>
-                    <p>Question : {item.question}</p>
-                    <p>Answer : {item.answer}</p>
-                    <button>{item.priority}</button><br></br>
-                    <button type="button" disabled={item.editingAllowed != "true"} className="edit-button" onClick={() => this.showEditQuestionModal(item)}>Edit Question</button>
+                <div key={item.id} className="question-item">
+                    <p className="question">Question :{item.question}</p>
+                    <p className="answer"><strong>Answer :</strong>{item.answer}</p>
+                    <p className="category"><strong>Category :</strong>{item.category}</p>
+                    <p className="priority"><strong>{item.priority}</strong></p>
+                    <button type="button" disabled={item.editingAllowed !== "true"} className="btn btn-primary btn-block" onClick={() => this.showEditModal(item)}>Edit Question</button>
                 </div>
             )
         })
     }
 
-    showEditQuestionModal = (question) => {
+    showEditModal = (question) => {
         console.log("open");
-        this.setState({ showModal: true , question});
+        this.setState({ showEditModal: true, question });
+    }
+    showAddModal = () => {
+        console.log("open add modal");
+        this.setState({ showAddModal: true });
     }
 
-    hideEditQuestionModal = () => {
+    hideModal = () => {
         console.log("closed")
-        this.setState({ showModal: false });
+        this.setState({ showAddModal: false, showEditModal: false });
     }
     render() {
-        console.log(this.props)
         return (
-            <div className="question-answer-wrapper">
-                <h1>QuestionList</h1>
-                <h2>Project Name :{this.props.name}</h2>
+            <div className="question-answer">
                 {this.displayQuestions()}
-                <EditQuestionModel item={this.state.question} showModal={this.state.showModal} handleClose={this.hideEditQuestionModal} />
-
+                <EditModal item={this.state.question} showEditModal={this.state.showEditModal} handleClose={this.hideModal} />
+                <hr />
+                <button type="button" className="btn btn-primary btn-block add-button" onClick={this.showAddModal}>Add Question</button>
+                <AddQuestionModal showAddModal={this.state.showAddModal} handleClose={this.hideModal} />
             </div>
+
         )
     }
 }
+export default graphql(getQuestionsQuery)(QuestionList);
 
-export default graphql(getQuestionsQueryUsingToken, {
-    options: (props) => {
-        const token = localStorage.getItem('token');
-        return {
-            variables: { token },
-        }
-    }
-})(QuestionList);
+// export default graphql(getQuestionsQueryUsingToken, {
+//     options: (props) => {
+//         const token = localStorage.getItem('token');
+//         return {
+//             variables: { token },
+//         }
+//     }
+// })(QuestionList);

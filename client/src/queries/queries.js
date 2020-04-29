@@ -32,6 +32,8 @@ const getQuestionsQuery = gql`
         question
         answer
         priority
+        category,
+        editingAllowed
     }
 }
 `
@@ -51,29 +53,30 @@ query($token:String) {
 //Using query variables to get the values in the fields 
 // from the updated state in the component
 
-const userMutation = gql` 
-mutation($username :String! ,$password :String! , $role :String!){
-    addBook(username :$username ,password :$password , role :$role ){
-       username,
-       password,
-       role
+
+const addQuestionMutation = gql` 
+mutation($question :String! ,$answer :String!, $priority :String!,$category :String!){
+    addQuestion(question :$question ,answer :$answer ,priority :$priority,category :$category){
+       question,
+       answer,
+       priority,
+       category
     }
 }
-`
-
-// const addProjectMutation = gql` 
-
-// `
-
-// const addQuestionMutation = gql` 
-
-// `
+ `
+const editQuestionMutation = gql` 
+mutation($question :String! ,$answer :String!){
+    editQuestion(question :$question ,answer :$answer){
+        question,
+        answer
+    }
+}
+ `
 export {
     loginUserQuery,
     getProjectsQuery,
     getQuestionsQuery,
     getQuestionsQueryUsingToken,
-    // addProjectMutation,
-    userMutation,
-    // addQuestionMutation
+    addQuestionMutation,
+    editQuestionMutation
 }

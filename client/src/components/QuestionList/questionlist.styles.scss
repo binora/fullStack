@@ -1,0 +1,24 @@
+.question-answer{
+    margin: 20px;
+    .question-item{
+      
+        .question{
+            font-size: 20px;
+            font-weight: 500;
+        }
+        .answer,.priority,.category{
+            font-size: 18px;
+        }
+         button{
+            display: flex;
+            max-width: 130px;
+            width: 100%;
+             margin: 5px;
+        }
+    }
+    .add-button{
+        width: 100%;
+        display: flex;
+        max-width: 130px;
+    }
+}

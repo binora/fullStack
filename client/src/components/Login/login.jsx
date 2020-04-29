@@ -24,7 +24,7 @@ class Login extends Component {
     submitForm(e) {
         e.preventDefault();
         const { client } = this.props;
-        const data  = this.props.data;
+        const data = this.props.data;
         console.log(data);
         client.query({
             query: loginUserQuery,
@@ -36,17 +36,6 @@ class Login extends Component {
             return (this.redirectToProjectPage(data))
         });
     }
-
-    // showEditor(data) {
-    //     console.log(data);
-    //     const { user } = data
-    //     if (user.role === "Admin" || user.role === "Editor") {
-    //         console.log(`${user.role} logged In`);
-    //         return <Redirect to ="/editQuestion" />
-    //     }
-
-    // }
-
     redirectToProjectPage(data) {
         console.log(data);
         const { user } = data
@@ -65,18 +54,18 @@ class Login extends Component {
             return <Redirect to="/projects" />
         }
         return (
-            <div className="login-page">
-                <h2>Login Page</h2>
+            <div className="form-wrapper">
                 <form id="user" onSubmit={this.submitForm.bind(this)}>
-                    <div className="field">
-                        <label>User Name :</label>
-                        <input type="text" onChange={(e) => this.setState({ username: e.target.value })} required placeholder="Username" />
+                    <h3>Log In</h3>
+                    <div className="form-group">
+                        <label>User Name</label>
+                        <input type="text" className="form-control" onChange={(e) => this.setState({ username: e.target.value })} required placeholder=" Enter Username" />
                     </div>
-                    <div className="field">
-                        <label>Password :</label>
-                        <input type="password" onChange={(e) => this.setState({ password: e.target.value })} required placeholder="Password" />
+                    <div className="form-group">
+                        <label>Password</label>
+                        <input type="password" className="form-control" onChange={(e) => this.setState({ password: e.target.value })} required placeholder="Enter Password" />
                     </div>
-                    <button type="submit">Submit</button>
+                    <button className="btn btn-primary btn-block">Submit</button>
                 </form>
             </div>
 

@@ -53,8 +53,7 @@ const ProjectType = new GraphQLObjectType({
         owner: {
             type: UserType,
             resolve(parent, args) {
-                console.log(parent);
-                // return _.find(users, { id: parent.Id });
+              // return _.find(users, { id: parent.Id });
                 return User.findById(parent.id); //return the name of the user whose id matches with the parent id(Project)
             }
         },
@@ -107,16 +106,18 @@ const RootQuery = new GraphQLObjectType({
             type: new GraphQLList(QuestionType), //list of Questions
             args: { user_token: { type: GraphQLString } },
             async resolve(parent, args) {
-                const { role } = await User.findOne({ token: args.user_token }).select(['role']);
+                // const { role } = await User.findOne({ token: args.user_token }).select(['role']);
+                // console.log(role);
                 const questions = await Question.find({})
-                let editingAllowed = false;
-                if (role == "Admin" || role == "Editor") {
-                    editingAllowed = true;
-                }
+                let editingAllowed = true;
+                // if (role == "Admin" || role == "Editor") {
+                //     editingAllowed = true;
+                // }
                 // return questions;
                 return questions.map((q) => {
                     q.editingAllowed = editingAllowed
                     return q
+                   
                 })
             }
         },
@@ -175,13 +176,28 @@ const Mutation = new GraphQLObjectType({
                 return project.save();
             }
         },
+        editQuestion: {
+            type: QuestionType,
+            args: {
+                question: { type: new GraphQLNonNull(GraphQLString) },
+                answer: { type: new GraphQLNonNull(GraphQLString) },
+            },
+            resolve(parent, args) {
+                let editQuestion = new Question({
+                    question: args.question,
+                    answer: args.answer,
+                });
+                return editQuestion.save();
+            }
+
+        },
         addQuestion: {
             type: QuestionType,
             args: {
                 question: { type: new GraphQLNonNull(GraphQLString) },
                 answer: { type: new GraphQLNonNull(GraphQLString) },
-                category: { type: new GraphQLNonNull(GraphQLString) },
-                priority: { type: new GraphQLNonNull(GraphQLString) },
+                category: { type: GraphQLString },
+                priority: { type: GraphQLString },
 
             },
             resolve(parent, args) {
